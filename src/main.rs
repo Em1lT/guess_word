@@ -15,6 +15,7 @@ fn main() {
 
     let nextGuess: String;
 
+
     if !corr {
         for c in word.chars() {
             if c == random_word.chars()[c] {
