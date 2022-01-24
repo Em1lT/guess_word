@@ -12,19 +12,19 @@ fn main() {
 
     let word: String = read!();
     let corr: bool = random_word.eq(word.as_str());
-
     let nextGuess: String;
 
-
-    if !corr {
-        for c in word.chars() {
-            if c == random_word.chars()[c] {
-                nextGuess += "O "
-            } else if random_word.chars().contains(c) {
-                nextGuess += "O "
-            };
+    if !word.is_empty() {
+        for (i, c) in word.chars().enumerate() {
+            let wordStr: &str = random_word.collect();
+            println!("{}", c);
+            // if c == wordStr {
+            //     nextGuess += "O "
+            // } else if random_word.chars().contains(c) {
+            //     nextGuess += "O "
+            // };
         };
     } else {
-        println!("you got: {} on the {}", corr, tries);
+        println!("No input");
     };
 }
