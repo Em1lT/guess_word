@@ -15,19 +15,22 @@ fn main() {
     println!("? ? ?");
 
      let word: String = ask_input();
+     let mut next_guess: String = "".to_owned();
+
 
     if !word.is_empty() {
         for (i, c) in word.chars().enumerate() {
             let word_str: Vec<char> = random_word.chars().collect();
-            println!("{}", c);
-            println!("{}", word_str[i]);
 
-            // if c == wordStr {
-            //     nextGuess += "O "
-            // } else if random_word.chars().contains(c) {
-            //     nextGuess += "O "
-            // };
+            if c == word_str[i] {
+                next_guess.push_str("O ")
+            } else if random_word.contains(c) {
+                next_guess.push_str("! ")
+            } else {
+                next_guess.push_str("X ")
+            }
         };
+        println!("{}", next_guess);
     } else {
         println!("No input");
     };
