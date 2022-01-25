@@ -1,5 +1,6 @@
 use text_io::read;
 use rand::Rng;
+use std::io::{self, Write};
 
 fn ask_input()-> String {
     read!()
@@ -20,16 +21,21 @@ fn main() {
     while !guess_correct && tries != total_tries {
         next_guess.clear();
         let mut word: String = "".to_owned();
-        //while word.len() != 3 {
-            word.push_str(&ask_input());
-        // }
+
+        while word.len() != 3 {
+            let input: &String = &ask_input();
+            if input.len() == 3 {
+                word.push_str(input)
+            } else {
+                println!("Only 3 letters");
+            }
+        }
 
         for (i, c) in word.chars().enumerate() {
             let word_str: Vec<char> = random_word.chars().collect();
 
             if word == random_word {
                 guess_correct = true;
-                break
             }
 
             if c == word_str[i] {
@@ -43,4 +49,6 @@ fn main() {
         println!("[ {}]", next_guess);
         tries = tries + 1;
     }
+    let msg = if guess_correct { "You won!" } else { "You lost!" };
+    println!("[ {} ]", msg);
 }
