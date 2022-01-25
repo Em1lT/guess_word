@@ -16,13 +16,11 @@ fn main() {
 
      let word: String = ask_input();
 
-    let nextGuess: String;
-
     if !word.is_empty() {
         for (i, c) in word.chars().enumerate() {
-            let wordStr: Vec<char> = random_word.chars().collect();
+            let word_str: Vec<char> = random_word.chars().collect();
             println!("{}", c);
-            println!("{}", wordStr[i]);
+            println!("{}", word_str[i]);
 
             // if c == wordStr {
             //     nextGuess += "O "
