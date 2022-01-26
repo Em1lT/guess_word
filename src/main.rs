@@ -35,30 +35,39 @@ fn answer()-> String {
     }
     word
 }
-
-fn main() {
-    let list: [&str; 3] = ["dog", "cat", "cow"];
-    let mut random_number = rand::thread_rng();
-    let random_word = list[random_number.gen_range(0..list.len() - 1)];
-
-    println!(" [ Guess a 3 letter word, 3 tries ]");
-    println!(" [ ? ? ? ]");
+fn start_game(winning_word: &str) {
     let mut guess_correct: bool = false;
     let mut tries: u8 = 0;
     let total_tries: u8 = 3;
 
     while !guess_correct && tries != total_tries {
-
         let user_answer = answer();
-
-        if user_answer == random_word {
+        if user_answer == winning_word {
             guess_correct = true;
         }
-        let answer_row: String = enumarate_answer(user_answer, random_word);
+        let answer_row: String = enumarate_answer(user_answer, winning_word);
 
         println!("[ {}]", answer_row);
         tries = tries + 1;
     }
     let msg = if guess_correct { "You won!" } else { "You lost!" };
     println!("[ {} ]", msg);
+}
+
+fn random_word()-> &'static str {
+    let list: [&str; 3] = ["dog", "cat", "cow"];
+    let mut random_number = rand::thread_rng();
+    let random_word = list[random_number.gen_range(0..list.len() - 1)];
+    random_word
+}
+
+fn setup() {
+    let random_word = random_word();
+    println!(" [ Guess a 3 letter word, 3 tries ]");
+    println!(" [ ? ? ? ]");
+    start_game(random_word);
+}
+
+fn main() {
+    setup();
 }
