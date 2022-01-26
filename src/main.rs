@@ -23,6 +23,19 @@ fn enumarate_answer(guess_word: String, correct_word: &str)-> String {
     next_guess
 }
 
+fn answer()-> String {
+    let mut word: String = "".to_owned();
+    while word.len() != 3 {
+        let input: &String = &ask_input();
+        if input.len() == 3 {
+            word.push_str(input);
+        } else {
+            println!("Only 3 letters");
+        }
+    }
+    word
+}
+
 fn main() {
     let list: [&str; 3] = ["dog", "cat", "cow"];
     let mut random_number = rand::thread_rng();
@@ -35,21 +48,13 @@ fn main() {
     let total_tries: u8 = 3;
 
     while !guess_correct && tries != total_tries {
-        let mut word: String = "".to_owned();
 
-        while word.len() != 3 {
-            let input: &String = &ask_input();
-            if input.len() == 3 {
-                word.push_str(input)
-            } else {
-                println!("Only 3 letters");
-            }
-        }
+        let user_answer = answer();
 
-        if word == random_word {
+        if user_answer == random_word {
             guess_correct = true;
         }
-        let answer_row: String = enumarate_answer(word, random_word);
+        let answer_row: String = enumarate_answer(user_answer, random_word);
 
         println!("[ {}]", answer_row);
         tries = tries + 1;
