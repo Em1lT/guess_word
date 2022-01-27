@@ -46,7 +46,6 @@ fn start_game(winning_word: &str) {
             guess_correct = true;
         }
         let answer_row: String = enumarate_answer(user_answer, winning_word);
-
         println!("[ {}]", answer_row);
         tries = tries + 1;
     }
