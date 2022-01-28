@@ -1,5 +1,8 @@
 use text_io::read;
 use rand::Rng;
+use std::io::{BufRead, BufReader};
+use std::fs::File;
+use std::path::Path;
 // use std::io::{self, Write};
 
 fn ask_input()-> String {
@@ -54,9 +57,13 @@ fn start_game(winning_word: &str) {
 }
 
 fn random_word()-> &'static str {
-    let list: [&str; 3] = ["dogas", "catsr", "cowll"];
+    // let list: [&str; 3] = ["dogas", "catsr", "cowll"];
+    let path = Path::new("./lists/words.txt");
+    let file = BufReader::new(File::open(&path).expect("Unable to open file"));
+    let file_length = file.lines().count();
     let mut random_number = rand::thread_rng();
-    let random_word = list[random_number.gen_range(0..list.len() - 1)];
+    let file_lines = file.lines();
+    let random_word = file_lines[random_number.gen_range(0..file_length)];
     random_word
 }
 
@@ -68,5 +75,7 @@ fn setup() {
 }
 
 fn main() {
-    setup();
+    // setup();
+    let paska = random_word();
+    println!(" [ {} ]", paska);
 }
