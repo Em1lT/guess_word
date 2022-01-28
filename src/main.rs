@@ -25,12 +25,12 @@ fn enumarate_answer(guess_word: String, correct_word: &str)-> String {
 
 fn answer()-> String {
     let mut word: String = "".to_owned();
-    while word.len() != 3 {
+    while word.len() != 5 {
         let input: &String = &ask_input();
-        if input.len() == 3 {
+        if input.len() == 5 {
             word.push_str(input);
         } else {
-            println!("Only 3 letters");
+            println!("Only 5 letters");
         }
     }
     word
@@ -54,7 +54,7 @@ fn start_game(winning_word: &str) {
 }
 
 fn random_word()-> &'static str {
-    let list: [&str; 3] = ["dog", "cat", "cow"];
+    let list: [&str; 3] = ["dogas", "catsr", "cowll"];
     let mut random_number = rand::thread_rng();
     let random_word = list[random_number.gen_range(0..list.len() - 1)];
     random_word
@@ -62,8 +62,8 @@ fn random_word()-> &'static str {
 
 fn setup() {
     let random_word = random_word();
-    println!(" [ Guess a 3 letter word, 3 tries ]");
-    println!(" [ ? ? ? ]");
+    println!(" [ Guess a 5 letter word, 3 tries ]");
+    println!(" [ ? ? ? ? ? ]");
     start_game(random_word);
 }
 
