@@ -1,15 +1,17 @@
 use text_io::read;
 use rand::Rng;
-use std::io::{BufRead, BufReader};
+use std::io::{self, BufRead, BufReader};
 use std::fs::File;
 use std::path::Path;
+use std::borrow::Borrow;
+
 // use std::io::{self, Write};
 
 fn ask_input()-> String {
     read!()
 }
 
-fn enumarate_answer(guess_word: String, correct_word: &str)-> String {
+fn enumarate_answer(guess_word: String, correct_word: String)-> String {
     let mut next_guess: String = "".to_owned();
     let word_str: Vec<char> = correct_word.chars().collect();
 
@@ -38,7 +40,7 @@ fn answer()-> String {
     }
     word
 }
-fn start_game(winning_word: &str) {
+fn start_game(winning_word: String) {
     let mut guess_correct: bool = false;
     let mut tries: u8 = 0;
     let total_tries: u8 = 3;
@@ -56,14 +58,26 @@ fn start_game(winning_word: &str) {
     println!("[ {} ]", msg);
 }
 
-fn random_word()-> &'static str {
+fn random_word()-> String {
     // let list: [&str; 3] = ["dogas", "catsr", "cowll"];
-    let path = Path::new("./lists/words.txt");
-    let file = BufReader::new(File::open(&path).expect("Unable to open file"));
-    let file_length = file.lines().count();
     let mut random_number = rand::thread_rng();
-    let file_lines = file.lines();
-    let random_word = file_lines[random_number.gen_range(0..file_length)];
+    let mut random_word: String = "".to_string();
+    let mut cnt: u8 = 0;
+    let path = Path::new("./lists/words.txt");
+    let file = BufReader::new(File::open(&path).expect("Unable to open file")).lines();
+    let file_length = file.borrow().clone().count();
+    let random_index = random_number.gen_range(0..file_length);
+
+    // let file_lines = file;
+    for line in file {
+        if usize::from(cnt) == random_index {
+            println!(" [ {:?} ]", &line.unwrap());
+            break;
+        }
+        cnt = cnt + 1;
+    }
+
+    random_word.push_str("horse");
     random_word
 }
 
