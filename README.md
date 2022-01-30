@@ -1,6 +1,7 @@
 # guess_word
 
-Command line game where you guess the word
+Command line game where you guess the word. Rust compiler is currenytly needed to run the project.
+https://www.rust-lang.org/tools/install
 
 # Getting Started
 
