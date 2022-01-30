@@ -1,4 +1,5 @@
 use text_io::read;
+use std::env;
 use rand::Rng;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
@@ -83,6 +84,13 @@ fn setup() {
     start_game(random_word, total_tries);
 }
 
+fn extract_arguments(args: Vec<String>) -> &'static String {
+    println!("{:?}", &args[1]);
+    let tries = &args[1];
+    tries
+}
+
 fn main() {
-    setup();
+    let args = extract_arguments(env::args().collect());
+    //setup();
 }
