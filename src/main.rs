@@ -37,10 +37,9 @@ fn answer()-> String {
     }
     word
 }
-fn start_game(winning_word: String) {
+fn start_game(winning_word: String, total_tries: u8) {
     let mut guess_correct: bool = false;
     let mut tries: u8 = 0;
-    let total_tries: u8 = 3;
 
     while !guess_correct && tries != total_tries {
         let user_answer = answer();
@@ -78,9 +77,10 @@ fn read_file () -> std::io::Lines<std::io::BufReader<std::fs::File>> {
 
 fn setup() {
     let random_word = random_word();
-    println!(" [ Guess a 5 letter word, 3 tries ]");
+    let total_tries: u8 = 5;
+    println!(" [ Guess a 5 letter word, {} tries ]", total_tries);
     println!(" [ ? ? ? ? ? ]");
-    start_game(random_word);
+    start_game(random_word, total_tries);
 }
 
 fn main() {
