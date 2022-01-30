@@ -1,12 +1,8 @@
-use rand::Rng;
 use std::io::{BufRead, BufReader};
-use std::fs::File;
-use text_io::read;
+use crate::utils::{read_input};
 use std::path::Path;
-
-pub fn read_input()-> String {
-    read!()
-}
+use std::fs::File;
+use rand::Rng;
 
 // core module 
 fn enumarate_answer(guess_word: String, correct_word: String)-> String {
