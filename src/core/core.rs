@@ -2,6 +2,14 @@ use crate::utils::{read_input};
 use crate::utils::{read_file};
 use rand::Rng;
 
+pub fn setup() {
+    let random_word = random_word();
+    let total_tries: u8 = 5;
+    println!(" [ Guess a 5 letter word, {} tries ]", total_tries);
+    println!(" [ ? ? ? ? ? ]");
+    start_game(random_word, total_tries);
+}
+
 fn enumarate_answer(guess_word: String, correct_word: String)-> String {
     let mut next_guess: String = "".to_owned();
     let word_str: Vec<char> = correct_word.chars().collect();
@@ -15,7 +23,6 @@ fn enumarate_answer(guess_word: String, correct_word: String)-> String {
             next_guess.push_str("X ")
         }
     };
-
     next_guess
 }
 
@@ -64,10 +71,3 @@ fn random_word()-> String {
     random_word
 }
 
-pub fn setup() {
-    let random_word = random_word();
-    let total_tries: u8 = 5;
-    println!(" [ Guess a 5 letter word, {} tries ]", total_tries);
-    println!(" [ ? ? ? ? ? ]");
-    start_game(random_word, total_tries);
-}
