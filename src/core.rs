@@ -1,11 +1,10 @@
-use text_io::read;
 use rand::Rng;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
+use text_io::read;
 use std::path::Path;
 
-// io module
-fn ask_input()-> String {
+pub fn read_input()-> String {
     read!()
 }
 
@@ -31,7 +30,7 @@ fn enumarate_answer(guess_word: String, correct_word: String)-> String {
 fn answer()-> String {
     let mut word: String = "".to_owned();
     while word.len() != 5 {
-        let input: &String = &ask_input();
+        let input: &String = &read_input();
         if input.len() == 5 {
             word.push_str(input);
         } else {
@@ -77,7 +76,7 @@ fn random_word()-> String {
 
 // file module 
 fn read_file () -> std::io::Lines<std::io::BufReader<std::fs::File>> {
-    let path = Path::new("../../lists/words.txt");
+    let path = Path::new("./../lists/words.txt");
     let file = BufReader::new(File::open(&path).expect("Unable to open file"));
     file.lines()
 }

@@ -1,6 +1,6 @@
-#[path = "core/core.rs"] mod core;
-
+mod core;
+use crate::core::{setup};
 
 fn main() {
-    core::setup();
+   setup(); 
 }
