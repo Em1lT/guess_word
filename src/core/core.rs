@@ -9,7 +9,7 @@ fn ask_input()-> String {
     read!()
 }
 
-// game module 
+// core module 
 fn enumarate_answer(guess_word: String, correct_word: String)-> String {
     let mut next_guess: String = "".to_owned();
     let word_str: Vec<char> = correct_word.chars().collect();
@@ -27,7 +27,7 @@ fn enumarate_answer(guess_word: String, correct_word: String)-> String {
     next_guess
 }
 
-// game module 
+// core module 
 fn answer()-> String {
     let mut word: String = "".to_owned();
     while word.len() != 5 {
@@ -41,7 +41,7 @@ fn answer()-> String {
     word
 }
 
-// game module 
+// core module 
 fn start_game(winning_word: String, total_tries: u8) {
     let mut guess_correct: bool = false;
     let mut tries: u8 = 0;
@@ -59,7 +59,7 @@ fn start_game(winning_word: String, total_tries: u8) {
     println!("[ {} ] \n[   {}   ]", msg, winning_word);
 }
 
-// game module 
+// core module 
 fn random_word()-> String {
     let word_list = read_file();
     let random_number: u16 = rand::thread_rng().gen_range(0..500);
@@ -77,12 +77,12 @@ fn random_word()-> String {
 
 // file module 
 fn read_file () -> std::io::Lines<std::io::BufReader<std::fs::File>> {
-    let path = Path::new("./lists/words.txt");
+    let path = Path::new("../../lists/words.txt");
     let file = BufReader::new(File::open(&path).expect("Unable to open file"));
     file.lines()
 }
 
-// game module 
+// core module 
 pub fn setup() {
     let random_word = random_word();
     let total_tries: u8 = 5;

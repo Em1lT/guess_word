@@ -1,7 +1,6 @@
-mod game;
+#[path = "core/core.rs"] mod core;
 
-use game::setup;
 
 fn main() {
-    setup();
+    core::setup();
 }
