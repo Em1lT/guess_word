@@ -2,6 +2,12 @@
 
 Command line game where you guess the word
 
+# Getting Started
+
+1. git clone git@github.com:Em1lT/guess_word.git
+2. cd guess_word
+3. cargo run 
+
 # Status
 
 wip
