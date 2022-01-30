@@ -1,2 +1,5 @@
-mod utils;
-pub use utils::read_input;
+mod input;
+mod file;
+
+pub use input::read_input;
+pub use file::read_file;
