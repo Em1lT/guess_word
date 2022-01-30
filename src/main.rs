@@ -1,11 +1,8 @@
 use text_io::read;
 use rand::Rng;
-use std::io::{self, BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 use std::fs::File;
 use std::path::Path;
-use std::borrow::Borrow;
-
-// use std::io::{self, Write};
 
 fn ask_input()-> String {
     read!()
@@ -50,35 +47,33 @@ fn start_game(winning_word: String) {
         if user_answer == winning_word {
             guess_correct = true;
         }
-        let answer_row: String = enumarate_answer(user_answer, winning_word);
+        let answer_row: String = enumarate_answer(user_answer, winning_word.to_string());
         println!("[ {}]", answer_row);
         tries = tries + 1;
     }
     let msg = if guess_correct { "You won!" } else { "You lost!" };
-    println!("[ {} ]", msg);
+    println!("[ {} ] \n[   {}   ]", msg, winning_word);
 }
 
 fn random_word()-> String {
-    // let list: [&str; 3] = ["dogas", "catsr", "cowll"];
-    let mut random_number = rand::thread_rng();
+    let word_list = read_file();
+    let random_number: u16 = rand::thread_rng().gen_range(0..500);
     let mut random_word: String = "".to_string();
-    let mut cnt: u8 = 0;
-    let path = Path::new("./lists/words.txt");
-    let file = BufReader::new(File::open(&path).expect("Unable to open file")).lines();
-    let file_length = file.borrow().clone().count();
-    let random_index = random_number.gen_range(0..file_length);
-
-    // let file_lines = file;
-    for line in file {
-        if usize::from(cnt) == random_index {
-            println!(" [ {:?} ]", &line.unwrap());
-            break;
+    let mut cnt: u16 = 0;
+    for line in word_list {
+        if cnt == random_number {
+            // println!("{}", &line.unwrap());
+            random_word.push_str(&line.unwrap());
         }
         cnt = cnt + 1;
     }
-
-    random_word.push_str("horse");
     random_word
+}
+
+fn read_file () -> std::io::Lines<std::io::BufReader<std::fs::File>> {
+    let path = Path::new("./lists/words.txt");
+    let file = BufReader::new(File::open(&path).expect("Unable to open file"));
+    file.lines()
 }
 
 fn setup() {
@@ -89,7 +84,5 @@ fn setup() {
 }
 
 fn main() {
-    // setup();
-    let paska = random_word();
-    println!(" [ {} ]", paska);
+    setup();
 }
