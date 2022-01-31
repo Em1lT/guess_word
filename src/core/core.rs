@@ -1,6 +1,4 @@
-use crate::utils::{read_input};
-use crate::utils::{read_file};
-use crate::utils::{output};
+use crate::utils::{read_input, read_file};
 use rand::Rng;
 
 pub fn setup() {
