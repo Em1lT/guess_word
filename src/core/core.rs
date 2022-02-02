@@ -4,7 +4,6 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use std::{error::Error, io};
-use std::borrow::Borrow;
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -73,6 +72,7 @@ pub fn setup()-> Result<(), Box<dyn Error>> {
 }
 
 fn enumarate_answer(guess_word: String, correct_word: String)-> String {
+
     let mut next_guess: String = "".to_owned();
     let word_str: Vec<char> = correct_word.chars().collect();
 
