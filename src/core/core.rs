@@ -158,6 +158,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                 },
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
+
                         app.messages.push(app.input.drain(..).collect());
                     }
                     KeyCode::Char(c) => {
