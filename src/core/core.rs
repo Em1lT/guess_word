@@ -53,7 +53,7 @@ pub fn setup()-> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let app = App::default();
+    let app: App = App::default();
     let res = run_app(&mut terminal, app, random_word, total_tries);
 
     // restore terminal
@@ -142,10 +142,11 @@ fn random_word()-> String {
 }
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
-    start_game(winning_word, total_tries, app);
+    {
+        start_game(winning_word, total_tries, app);
+    }
     loop {
         terminal.draw(|f| ui(f, &app))?;
-
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
                 InputMode::Normal => match key.code {
