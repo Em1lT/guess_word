@@ -4,7 +4,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
-use std::{error::Error, io};
+use std::{error::Error, io, borrow::Borrow};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -102,7 +102,7 @@ fn answer()-> String {
     word
 }
 
-fn start_game(winning_word: String, total_tries: u8, mut app: App) {
+fn start_game(winning_word: String, total_tries: u8, app: &App) {
     let mut guess_correct: bool = false;
     let mut tries: u8 = 0;
 
@@ -110,7 +110,7 @@ fn start_game(winning_word: String, total_tries: u8, mut app: App) {
     welcomeMsg.push_str("Guess a 5 letter word ");
     welcomeMsg.push_str(&total_tries.to_string());
     welcomeMsg.push_str(" tries" );
-    app.messages.push(welcomeMsg);
+    &app.messages.push(welcomeMsg);
     println!(" [ ? ? ? ? ? ]");
 
     while !guess_correct && tries != total_tries {
@@ -143,7 +143,7 @@ fn random_word()-> String {
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
     {
-        start_game(winning_word, total_tries, app);
+        start_game(winning_word, total_tries, app.borrow());
     }
     loop {
         terminal.draw(|f| ui(f, &app))?;
