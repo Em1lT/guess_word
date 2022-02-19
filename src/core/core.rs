@@ -4,7 +4,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
-use std::{error::Error, io, borrow::Borrow};
+use std::{error::Error, io, borrow::Borrow, fmt::format};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -46,8 +46,6 @@ impl Default for App {
 pub fn setup()-> Result<(), Box<dyn Error>> {
     let random_word = random_word();
     let total_tries: u8 = 5;
-    let mut guess_correct: bool = false;
-    let mut tries: u8 = 0;
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -92,31 +90,18 @@ fn enumarate_answer(guess_word: &String, correct_word: String)-> String {
     next_guess
 }
 
-fn answer(answer: &String)-> String {
-        if answer.len() == 5 {
-            word.push_str(input);
-        } else {
-            word.push_str("Only 5 letters");
-        }
-    }
-    word
+fn valid_answer(answer: &String)-> bool {
+    if answer.len() == 5 { true } else { false }
 }
 
 fn welcome_msg(total_tries: u8, app: &mut App) {
-    let mut welcomeMsg: String = "".to_owned();
-    welcomeMsg.push_str("Guess a 5 letter word ");
-    welcomeMsg.push_str(&total_tries.to_string());
-    welcomeMsg.push_str(" tries");
-    welcomeMsg.push_str("\n ");
-    app.messages.push(welcomeMsg);
+    let mut msg: String = "".to_owned();
+    msg.push_str("Guess a 5 letter word ");
+    msg.push_str(&total_tries.to_string());
+    msg.push_str(" tries");
+    msg.push_str("\n ");
+    app.messages.push(msg);
     app.messages.push("[ ? ? ? ? ? ]".to_string());
-    // while !guess_correct && tries != total_tries {
-    //     let answer_row: String = enumarate_answer(user_answer, winning_word.to_string());
-    //     println!("[ {}]", answer_row);
-    //     tries = tries + 1;
-    // }
-    // let msg = if guess_correct { "You won!" } else { "You lost!" };
-    // println!("[ {} ] \n[   {}   ]", msg, winning_word);
 }
 
 fn random_word()-> String {
@@ -135,6 +120,7 @@ fn random_word()-> String {
 }
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
+    let mut tries: u8 = 0;
     loop {
         terminal.draw(|f| ui(f, &app))?;
         if let Event::Key(key) = event::read()? {
@@ -151,18 +137,22 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         let user_answer = app.input.drain(..).collect();
-                        if answer(user_answer) {
+                        if valid_answer(&user_answer) {
                              if user_answer == winning_word {
                                  return Ok(());
                              }
+
+                             if tries == total_tries {
+                                 return Ok(());
+                             }
+
                              let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
-                            app.messages.push(user_answer);
+                            app.messages.push(user_answer.to_string());
                             app.messages.push(answer_row);
+                            tries = tries + 1;
+                        } else {
+                            app.messages.push("Not valid answer".to_string());
                         }
-                        // tries = tries + 1;
-                        // let msg = if guess_correct { "You won!" } else { "You lost!" };
-                        // println!("[ {} ] \n[   {}   ]", msg, winning_word);
-                        app.messages.push("".to_string());
                     }
                     KeyCode::Char(c) => {
                         app.input.push(c);
@@ -248,7 +238,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .messages
         .iter()
         .enumerate()
-        .map(|(i, m)| {
+        .map(|(_, m)| {
             let content = vec![Spans::from(Span::raw(format!("{}", m)))];
             ListItem::new(content)
         })
