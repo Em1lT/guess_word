@@ -5,6 +5,6 @@ use crate::core::{setup};
 
 fn main()  {
     // setup terminal
-    setup(); 
+    setup().map_err(|err| println!("{:?}", err)).ok();
 }
 

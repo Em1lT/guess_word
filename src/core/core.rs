@@ -4,7 +4,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
-use std::{error::Error, io, borrow::Borrow, fmt::format};
+use std::{error::Error, io};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -15,7 +15,7 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use crate::utils::{read_input, read_file};
+use crate::utils::{read_file};
 use rand::Rng;
 
 enum InputMode {
