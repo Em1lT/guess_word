@@ -15,7 +15,6 @@ wip
 
 # ROADMAP
 
-- cli arguments
 - cleaning code
 - UI
 - multiple languages
