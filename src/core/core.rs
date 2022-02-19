@@ -46,6 +46,9 @@ impl Default for App {
 pub fn setup()-> Result<(), Box<dyn Error>> {
     let random_word = random_word();
     let total_tries: u8 = 5;
+    let mut guess_correct: bool = false;
+    let mut tries: u8 = 0;
+
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
@@ -53,7 +56,8 @@ pub fn setup()-> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let app: App = App::default();
+    let mut app: App = App::default();
+    welcome_msg(total_tries, &mut app);
     let res = run_app(&mut terminal, app, random_word, total_tries);
 
     // restore terminal
@@ -72,8 +76,7 @@ pub fn setup()-> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn enumarate_answer(guess_word: String, correct_word: String)-> String {
-
+fn enumarate_answer(guess_word: &String, correct_word: String)-> String {
     let mut next_guess: String = "".to_owned();
     let word_str: Vec<char> = correct_word.chars().collect();
 
@@ -89,41 +92,31 @@ fn enumarate_answer(guess_word: String, correct_word: String)-> String {
     next_guess
 }
 
-fn answer()-> String {
-    let mut word: String = "".to_owned();
-    while word.len() != 5 {
-        let input: &String = &read_input();
-        if input.len() == 5 {
+fn answer(answer: &String)-> String {
+        if answer.len() == 5 {
             word.push_str(input);
         } else {
-            println!("Only 5 letters");
+            word.push_str("Only 5 letters");
         }
     }
     word
 }
 
-fn start_game(winning_word: String, total_tries: u8, app: &App) {
-    let mut guess_correct: bool = false;
-    let mut tries: u8 = 0;
-
+fn welcome_msg(total_tries: u8, app: &mut App) {
     let mut welcomeMsg: String = "".to_owned();
     welcomeMsg.push_str("Guess a 5 letter word ");
     welcomeMsg.push_str(&total_tries.to_string());
-    welcomeMsg.push_str(" tries" );
-    &app.messages.push(welcomeMsg);
-    println!(" [ ? ? ? ? ? ]");
-
-    while !guess_correct && tries != total_tries {
-        let user_answer = answer();
-        if user_answer == winning_word {
-            guess_correct = true;
-        }
-        let answer_row: String = enumarate_answer(user_answer, winning_word.to_string());
-        println!("[ {}]", answer_row);
-        tries = tries + 1;
-    }
-    let msg = if guess_correct { "You won!" } else { "You lost!" };
-    println!("[ {} ] \n[   {}   ]", msg, winning_word);
+    welcomeMsg.push_str(" tries");
+    welcomeMsg.push_str("\n ");
+    app.messages.push(welcomeMsg);
+    app.messages.push("[ ? ? ? ? ? ]".to_string());
+    // while !guess_correct && tries != total_tries {
+    //     let answer_row: String = enumarate_answer(user_answer, winning_word.to_string());
+    //     println!("[ {}]", answer_row);
+    //     tries = tries + 1;
+    // }
+    // let msg = if guess_correct { "You won!" } else { "You lost!" };
+    // println!("[ {} ] \n[   {}   ]", msg, winning_word);
 }
 
 fn random_word()-> String {
@@ -142,9 +135,6 @@ fn random_word()-> String {
 }
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
-    {
-        start_game(winning_word, total_tries, app.borrow());
-    }
     loop {
         terminal.draw(|f| ui(f, &app))?;
         if let Event::Key(key) = event::read()? {
@@ -160,8 +150,19 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                 },
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
-
-                        app.messages.push(app.input.drain(..).collect());
+                        let user_answer = app.input.drain(..).collect();
+                        if answer(user_answer) {
+                             if user_answer == winning_word {
+                                 return Ok(());
+                             }
+                             let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
+                            app.messages.push(user_answer);
+                            app.messages.push(answer_row);
+                        }
+                        // tries = tries + 1;
+                        // let msg = if guess_correct { "You won!" } else { "You lost!" };
+                        // println!("[ {} ] \n[   {}   ]", msg, winning_word);
+                        app.messages.push("".to_string());
                     }
                     KeyCode::Char(c) => {
                         app.input.push(c);
@@ -248,7 +249,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .iter()
         .enumerate()
         .map(|(i, m)| {
-            let content = vec![Spans::from(Span::raw(format!("{}: {}", i, m)))];
+            let content = vec![Spans::from(Span::raw(format!("{}", m)))];
             ListItem::new(content)
         })
         .collect();
