@@ -120,6 +120,7 @@ fn random_word()-> String {
 }
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
+    let mut game_end: bool = false;
     let mut tries: u8 = 0;
     loop {
         terminal.draw(|f| ui(f, &app))?;
@@ -137,27 +138,31 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         let user_answer = app.input.drain(..).collect();
-                        if valid_answer(&user_answer) {
-                             if user_answer == winning_word {
-                                 return Ok(());
-                             }
+                        if game_end {
+                            if valid_answer(&user_answer) {
+                                 if user_answer == winning_word {
+                                     return Ok(());
+                                 }
 
-                             if tries == total_tries {
-                                 return Ok(());
-                             }
+                                 if tries == total_tries {
+                                     return Ok(());
+                                 }
 
-                             let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
-                            app.messages.push(user_answer.to_string());
-                            app.messages.push(answer_row);
-                            let mut msg: String = "".to_owned();
-                            msg.push_str("Tries left: ");
-                            let tries_left = total_tries - tries;
-                            msg.push_str(&tries_left.to_string());
-                            msg.push_str("\n ");
-                            app.messages.push(msg);
-                            tries = tries + 1;
+                                 let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
+                                app.messages.push(user_answer.to_string());
+                                app.messages.push(answer_row);
+                                let mut msg: String = "".to_owned();
+                                msg.push_str("Tries left: ");
+                                let tries_left = total_tries - tries;
+                                msg.push_str(&tries_left.to_string());
+                                msg.push_str("\n ");
+                                app.messages.push(msg);
+                                tries = tries + 1;
+                            } else {
+                                app.messages.push("Not valid answer".to_string());
+                            }
                         } else {
-                            app.messages.push("Not valid answer".to_string());
+                            app.messages.push("Game ended".to_string());
                         }
                     }
                     KeyCode::Char(c) => {
