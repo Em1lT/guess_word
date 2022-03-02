@@ -138,14 +138,16 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         let user_answer = app.input.drain(..).collect();
-                        if game_end {
+                        if game_end == false {
                             if valid_answer(&user_answer) {
                                  if user_answer == winning_word {
                                      return Ok(());
                                  }
 
                                  if tries == total_tries {
-                                     return Ok(());
+                                     app.messages.push(winning_word);
+                                     game_end = true;
+                                     // return Ok(());
                                  }
 
                                  let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
