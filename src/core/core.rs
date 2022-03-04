@@ -23,13 +23,9 @@ enum InputMode {
     Editing,
 }
 
-/// App holds the state of the application
 struct App {
-    /// Current value of the input box
     input: String,
-    /// Current input mode
     input_mode: InputMode,
-    /// History of recorded messages
     messages: Vec<String>,
 }
 
