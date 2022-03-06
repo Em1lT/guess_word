@@ -117,7 +117,7 @@ fn random_word()-> String {
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
     let mut game_end: bool = false;
-    let mut tries: u8 = 0;
+    let mut tries: u8 = 1;
     loop {
         terminal.draw(|f| ui(f, &app))?;
         if let Event::Key(key) = event::read()? {
@@ -139,13 +139,16 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                                  if user_answer == winning_word {
                                      app.messages.push("you won!".to_string());
                                      app.messages.push(winning_word.to_string());
+                                     app.messages.push("Game ended".to_string());
                                      game_end = true;
+                                     continue;
                                  }
 
                                  if tries == total_tries {
                                      app.messages.push(winning_word.to_string());
+                                     app.messages.push("Game ended".to_string());
                                      game_end = true;
-                                     // return Ok(());
+                                     continue;
                                  }
 
                                  let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
@@ -162,7 +165,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                                 app.messages.push("Not valid answer".to_string());
                             }
                         } else {
-                            app.messages.push("Game ended".to_string());
+                            return Ok(());
                         }
                     }
                     KeyCode::Char(c) => {
