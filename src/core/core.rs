@@ -19,17 +19,12 @@ use crate::utils::{read_file};
 use rand::Rng;
 
 enum InputMode {
-    Normal,
     Editing,
 }
 
-/// App holds the state of the application
 struct App {
-    /// Current value of the input box
     input: String,
-    /// Current input mode
     input_mode: InputMode,
-    /// History of recorded messages
     messages: Vec<String>,
 }
 
@@ -37,14 +32,14 @@ impl Default for App {
     fn default() -> App {
         App {
             input: String::new(),
-            input_mode: InputMode::Normal,
+            input_mode: InputMode::Editing,
             messages: Vec::new(),
         }
     }
 }
 
 pub fn setup()-> Result<(), Box<dyn Error>> {
-    let random_word = random_word();
+    let random_word: String = random_word();
     let total_tries: u8 = 5;
 
     enable_raw_mode()?;
@@ -120,38 +115,47 @@ fn random_word()-> String {
 }
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: String, total_tries: u8) -> io::Result<()> {
-    let mut tries: u8 = 0;
+    let mut game_end: bool = false;
+    let mut tries: u8 = 1;
     loop {
         terminal.draw(|f| ui(f, &app))?;
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
-                InputMode::Normal => match key.code {
-                    KeyCode::Char('e') => {
-                        app.input_mode = InputMode::Editing;
-                    }
-                    KeyCode::Char('q') => {
-                        return Ok(());
-                    }
-                    _ => {}
-                },
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         let user_answer = app.input.drain(..).collect();
-                        if valid_answer(&user_answer) {
-                             if user_answer == winning_word {
-                                 return Ok(());
-                             }
+                        if game_end == false {
+                            if valid_answer(&user_answer) {
+                                 if user_answer == winning_word {
+                                     app.messages.push("you won!".to_string());
+                                     app.messages.push(winning_word.to_string());
+                                     app.messages.push("Game ended".to_string());
+                                     game_end = true;
+                                     continue;
+                                 }
 
-                             if tries == total_tries {
-                                 return Ok(());
-                             }
+                                 if tries == total_tries {
+                                     app.messages.push(winning_word.to_string());
+                                     app.messages.push("Game ended".to_string());
+                                     game_end = true;
+                                     continue;
+                                 }
 
-                             let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
-                            app.messages.push(user_answer.to_string());
-                            app.messages.push(answer_row);
-                            tries = tries + 1;
+                                 let answer_row: String = enumarate_answer(&user_answer, winning_word.to_string());
+                                app.messages.push(user_answer.to_string());
+                                app.messages.push(answer_row);
+                                let mut msg: String = "".to_owned();
+                                msg.push_str("Tries left: ");
+                                let tries_left = total_tries - tries;
+                                msg.push_str(&tries_left.to_string());
+                                msg.push_str("\n ");
+                                app.messages.push(msg);
+                                tries = tries + 1;
+                            } else {
+                                app.messages.push("Not valid answer".to_string());
+                            }
                         } else {
-                            app.messages.push("Not valid answer".to_string());
+                            return Ok(());
                         }
                     }
                     KeyCode::Char(c) => {
@@ -161,7 +165,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                         app.input.pop();
                     }
                     KeyCode::Esc => {
-                        app.input_mode = InputMode::Normal;
+                        return Ok(());
                     }
                     _ => {}
                 },
@@ -185,23 +189,13 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .split(f.size());
 
     let (msg, style) = match app.input_mode {
-        InputMode::Normal => (
-            vec![
-                Span::raw("Press "),
-                Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to exit, "),
-                Span::styled("e", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to start editing."),
-            ],
-            Style::default(),
-        ),
         InputMode::Editing => (
             vec![
                 Span::raw("Press "),
                 Span::styled("Esc", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to stop editing, "),
+                Span::raw(" to quit, "),
                 Span::styled("Enter", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to record the message"),
+                Span::raw(" to quess word!"),
             ],
             Style::default(),
         ),
@@ -213,16 +207,11 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 
     let input = Paragraph::new(app.input.as_ref())
         .style(match app.input_mode {
-            InputMode::Normal => Style::default(),
             InputMode::Editing => Style::default().fg(Color::Yellow),
         })
         .block(Block::default().borders(Borders::ALL).title("Input"));
     f.render_widget(input, chunks[1]);
     match app.input_mode {
-        InputMode::Normal =>
-            // Hide the cursor. `Frame` does this by default, so we don't need to do anything here
-            {}
-
         InputMode::Editing => {
             // Make the cursor visible and ask tui-rs to put it at the specified coordinates after rendering
             f.set_cursor(
