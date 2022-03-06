@@ -40,7 +40,7 @@ impl Default for App {
 }
 
 pub fn setup()-> Result<(), Box<dyn Error>> {
-    let random_word = random_word();
+    let random_word: String = random_word();
     let total_tries: u8 = 5;
 
     enable_raw_mode()?;
@@ -137,11 +137,13 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                         if game_end == false {
                             if valid_answer(&user_answer) {
                                  if user_answer == winning_word {
-                                     return Ok(());
+                                     app.messages.push("you won!".to_string());
+                                     app.messages.push(winning_word.to_string());
+                                     game_end = true;
                                  }
 
                                  if tries == total_tries {
-                                     app.messages.push(winning_word);
+                                     app.messages.push(winning_word.to_string());
                                      game_end = true;
                                      // return Ok(());
                                  }
