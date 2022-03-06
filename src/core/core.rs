@@ -19,7 +19,6 @@ use crate::utils::{read_file};
 use rand::Rng;
 
 enum InputMode {
-    Normal,
     Editing,
 }
 
@@ -33,7 +32,7 @@ impl Default for App {
     fn default() -> App {
         App {
             input: String::new(),
-            input_mode: InputMode::Normal,
+            input_mode: InputMode::Editing,
             messages: Vec::new(),
         }
     }
@@ -122,15 +121,6 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
         terminal.draw(|f| ui(f, &app))?;
         if let Event::Key(key) = event::read()? {
             match app.input_mode {
-                InputMode::Normal => match key.code {
-                    KeyCode::Char('e') => {
-                        app.input_mode = InputMode::Editing;
-                    }
-                    KeyCode::Char('q') => {
-                        return Ok(());
-                    }
-                    _ => {}
-                },
                 InputMode::Editing => match key.code {
                     KeyCode::Enter => {
                         let user_answer = app.input.drain(..).collect();
@@ -175,7 +165,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                         app.input.pop();
                     }
                     KeyCode::Esc => {
-                        app.input_mode = InputMode::Normal;
+                        return Ok(());
                     }
                     _ => {}
                 },
@@ -199,23 +189,13 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .split(f.size());
 
     let (msg, style) = match app.input_mode {
-        InputMode::Normal => (
-            vec![
-                Span::raw("Press "),
-                Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to exit, "),
-                Span::styled("e", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to start editing."),
-            ],
-            Style::default(),
-        ),
         InputMode::Editing => (
             vec![
                 Span::raw("Press "),
                 Span::styled("Esc", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to stop editing, "),
+                Span::raw(" to quit, "),
                 Span::styled("Enter", Style::default().add_modifier(Modifier::BOLD)),
-                Span::raw(" to record the message"),
+                Span::raw(" to quess word!"),
             ],
             Style::default(),
         ),
@@ -227,16 +207,11 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 
     let input = Paragraph::new(app.input.as_ref())
         .style(match app.input_mode {
-            InputMode::Normal => Style::default(),
             InputMode::Editing => Style::default().fg(Color::Yellow),
         })
         .block(Block::default().borders(Borders::ALL).title("Input"));
     f.render_widget(input, chunks[1]);
     match app.input_mode {
-        InputMode::Normal =>
-            // Hide the cursor. `Frame` does this by default, so we don't need to do anything here
-            {}
-
         InputMode::Editing => {
             // Make the cursor visible and ask tui-rs to put it at the specified coordinates after rendering
             f.set_cursor(
