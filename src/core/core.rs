@@ -128,6 +128,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App, winning_word: S
                             if valid_answer(&user_answer) {
                                  if user_answer == winning_word {
                                      app.messages.push("you won!".to_string());
+                                     app.messages.push("Winning word is:".to_string());
                                      app.messages.push(winning_word.to_string());
                                      app.messages.push("Game ended".to_string());
                                      game_end = true;
