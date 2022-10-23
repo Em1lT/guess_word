@@ -90,7 +90,7 @@ fn valid_answer(answer: &String)-> bool {
 }
 
 fn new_msg(app: &mut App, msg: String) {
-        
+    app.messages.push(msg);
 }
 
 fn welcome_msg(total_tries: u8, app: &mut App) {
@@ -100,8 +100,8 @@ fn welcome_msg(total_tries: u8, app: &mut App) {
     msg.push_str(&total_tries.to_string());
     msg.push_str(" tries");
     msg.push_str("\n ");
-    app.messages.push(msg);
-    app.messages.push("[ ? ? ? ? ? ]".to_string());
+    new_msg(app, msg);
+    new_msg(app, "[ ? ? ? ? ? ]".to_string());
 }
 
 fn random_word()-> String {
