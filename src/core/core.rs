@@ -15,7 +15,7 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use crate::utils::{read_file};
+use crate::utils::read_file;
 use rand::Rng;
 
 enum InputMode {
@@ -89,9 +89,14 @@ fn valid_answer(answer: &String)-> bool {
     if answer.len() == 5 { true } else { false }
 }
 
+fn new_msg(app: &mut App, msg: String) {
+        
+}
+
 fn welcome_msg(total_tries: u8, app: &mut App) {
     let mut msg: String = "".to_owned();
-    msg.push_str("Guess a 5 letter word ");
+    msg.push_str("Guess a 5 letter word");
+    msg.push_str("\n ");
     msg.push_str(&total_tries.to_string());
     msg.push_str(" tries");
     msg.push_str("\n ");
